@@ -1,10 +1,11 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useEffect } from 'react';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
 function AppNavigator() {
@@ -22,6 +23,7 @@ function AppNavigator() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="pharmacy" options={{ headerShown: false }} />
         <Stack.Screen name="search" options={{ headerShown: false }} />
+        <Stack.Screen name="cart" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
     );
@@ -39,13 +41,19 @@ function AppNavigator() {
     );
   }
 }
-
+SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+  
   if (!loaded) {
     return null;
   }

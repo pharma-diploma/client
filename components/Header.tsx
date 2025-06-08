@@ -11,6 +11,8 @@ type Props = {
   rightContent?: React.ReactNode;
   absolute?: boolean;
   style?: ViewStyle;
+  leftContentStyle?: ViewStyle;
+  rightContentStyle?: ViewStyle;
   titleStyle?: TextStyle;
   backgroundColor?: string;
   titlePreIcon?: React.ReactNode;
@@ -24,6 +26,8 @@ const Header = ({
   onRightPress,
   leftContent,
   rightContent,
+  leftContentStyle,
+  rightContentStyle,
   absolute = true,
   style,
   titleStyle,
@@ -47,7 +51,7 @@ const Header = ({
           {backgroundColor}]}
         >
           <TouchableOpacity
-            style={styles.headerButton}
+            style={[styles.headerButton, leftContentStyle]}
             onPress={onLeftPress}
           >
             {
@@ -72,7 +76,7 @@ const Header = ({
             }
           </View>
           <TouchableOpacity
-            style={styles.headerButton}
+            style={[styles.headerButton, rightContentStyle]}
             onPress={onRightPress}
           >
             {

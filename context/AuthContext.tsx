@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { View } from "react-native";
 
 interface User {
   _id: string;
@@ -64,7 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Пока идет загрузка (restore) можно вернуть SplashScreen или null
   if (loading) {
-    return null;
+    return <View style={{flex:1, backgroundColor:'#fff'}} />;
   }
 
   return (

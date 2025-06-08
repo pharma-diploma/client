@@ -18,7 +18,12 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.pharma.app",
-      "versionCode": 1
+      "versionCode": 1,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCUhVL5RZ4-mx-hfMSZAxbCwJUAwL1tDw8"
+        }
+      }
     },
     "web": {
       "bundler": "metro",
@@ -35,7 +40,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

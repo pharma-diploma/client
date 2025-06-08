@@ -1,12 +1,12 @@
+import MinusIcon from '@/assets/svg/cart/MinusIcon';
+import PlusIcon from '@/assets/svg/cart/PlusIcon';
 import { useAuth } from '@/context/AuthContext';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import GradientButton from '../ui/GradientButton';
 
-interface ProductCardProps {
+interface CartItemCardProps {
     _id: string;
     name: string;
     image: string;
@@ -15,7 +15,7 @@ interface ProductCardProps {
 }
 
 
-const ProductCard = ({_id, name, image, price, description}: ProductCardProps) => {
+const CartItemCard = ({_id, name, image, price, description}: CartItemCardProps) => {
 const { user } = useAuth();
 const handleAddToCart = async () => {
     if (!user?._id) return; // или user?._id, если у вас так
@@ -38,7 +38,7 @@ const handleAddToCart = async () => {
     }
   };
   return (
-    <TouchableOpacity style={{
+    <View style={{
         backgroundColor: "white", 
         padding: 16,
         paddingVertical: 11,
@@ -49,10 +49,6 @@ const handleAddToCart = async () => {
         alignItems: 'center',
         justifyContent: 'space-between',
     }}
-        onPress={() => router.push({
-            pathname: '/products/[id]',
-            params: { id: _id }
-        })}
     >
       <View style={{flexDirection: "row", gap: 14,  maxWidth: '70%'}}>
         <Image 
@@ -99,16 +95,19 @@ const handleAddToCart = async () => {
             </View>
         </View>
       </View>
-      <GradientButton
-        title="У кошик"
-        onPress={handleAddToCart}
-        style={{ height: 34, padding: 0, width: 112 }}
-        textStyle={{ fontSize: 14, fontWeight: '500' }}
-      />
-    </TouchableOpacity>
+      <View style={{paddingVertical: 6, paddingHorizontal: 10, backgroundColor: "#F4F4F4", borderRadius: 40, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 17}}>
+            <TouchableOpacity>
+                <MinusIcon/>
+            </TouchableOpacity>
+            <Text>1</Text>
+            <TouchableOpacity>
+                <PlusIcon/>
+            </TouchableOpacity>
+      </View>
+    </View>
   )
 }
 
-export default ProductCard
+export default CartItemCard
 
 const styles = StyleSheet.create({})
