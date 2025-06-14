@@ -6,7 +6,7 @@ import ProductCard from '@/components/cards/ProductCard';
 import SearchInput from '@/components/ui/SearchInput';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Pharmacy = () => {
@@ -65,16 +65,19 @@ const Pharmacy = () => {
     };
     
     const handleSearch = async () => {
-      if (!query.trim()) return;
+      console.log(query, id);
+      if (!query.trim() || !id) return;
       setLoading(true);
       setError('');
       try {
-        const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/products/search/${encodeURIComponent(query)}`);
+        const res = await fetch(
+          `${process.env.EXPO_PUBLIC_API_URL}/products/pharmacy/${id}/search/${encodeURIComponent(query)}`
+        );
         if (!res.ok) throw new Error('Помилка пошуку');
         const data = await res.json();
         setResults(data);
       } catch (e) {
-          console.log(error);
+        console.log(error);
         setError('Не вдалося знайти результат');
       } finally {
         setLoading(false);
@@ -156,10 +159,36 @@ const Pharmacy = () => {
               <SearchInput
                   style={{backgroundColor: "#F8F8F8",}}
                   value={query}
-                  onChangeText={setQuery}
-                  onSubmitEditing={handleSearch}
+                  onChangeText={(v: string) => {setQuery(v); handleSearch()}}
+                  // onSubmitEditing={handleSearch}
               />
             </View>
+
+            {loading && <ActivityIndicator size="large" style={{ marginTop: 20 }} />}
+            {error ? <Text style={{ color: 'red', marginTop: 20 }}>{error}</Text> : null}
+            <FlatList
+              data={results}
+              keyExtractor={(item, idx) => item.id?.toString() || idx.toString()}
+              renderItem={({ item }) => (
+                <ProductCard
+                    key={`popular-${item._id}`}
+                    _id={item._id}
+                    name={item.name}
+                    image={item.image}
+                    price={item.price}
+                    description={item.description}
+                  />
+              )}
+              ListEmptyComponent={
+                !loading && !error ? (
+                  <Text style={{ textAlign: 'center', marginTop: 32, color: '#888' }}>
+                    Нічого не знайдено
+                  </Text>
+                ) : null
+              }
+              contentContainerStyle={{ gap: 12, }}
+              style={{ marginTop: 24 }}
+            />
 
 
             <View style={{marginTop: 30}}>
@@ -217,7 +246,6 @@ const Pharmacy = () => {
           :
           <Text style={{textAlign: 'center'}}>Завантаження інформації про аптеку...</Text>
         }
-
       </View>
     </ScrollView>
   )

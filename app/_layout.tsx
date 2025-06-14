@@ -23,7 +23,9 @@ function AppNavigator() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="pharmacy" options={{ headerShown: false }} />
         <Stack.Screen name="search" options={{ headerShown: false }} />
-        <Stack.Screen name="cart" options={{ headerShown: false }} />
+        <Stack.Screen name="order" options={{ headerShown: false }} />
+        <Stack.Screen name="notifications" options={{ headerShown: false }} />
+        <Stack.Screen name="account" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
     );

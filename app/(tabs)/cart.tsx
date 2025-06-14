@@ -2,8 +2,9 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import CartItemCard from '@/components/cards/CartItemCard';
 import Header from '@/components/Header';
+import GradientButton from '@/components/ui/GradientButton';
 import { useAuth } from '@/context/AuthContext';
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import React from 'react';
 
 export default function CartScreen() {
@@ -64,6 +65,7 @@ export default function CartScreen() {
               )}
             />
       </View>
+            <GradientButton title="Оформити замовлення 499₴" style={{width: "95%", position: "absolute", alignSelf: "center", bottom: 120}} onPress={() => router.push("/order")}/>
     </View>
   );
 }

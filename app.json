@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Pharma",
-    "slug": "pharma",
+    "slug": "sq-connect",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
@@ -47,10 +47,11 @@
       "typedRoutes": true
     },
     "extra": {
+      "router": {},
       "eas": {
-        "projectId": "cf40c2f6-8272-492e-bd6f-eeb4ccd6daed"
+        "projectId": "a7b12226-50a1-4586-894a-4f1854a552b3"
       }
     },
-    "owner": "pharma-diploma"
+    "owner": "totskaiasonia"
   }
 }

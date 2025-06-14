@@ -7,6 +7,11 @@ interface User {
   email: string;
   name: string;
   token: string;
+  notifications?: {
+    sales: boolean;
+    orderStatus: boolean;
+    deliveryMessage: boolean;
+  };
 }
 
 interface AuthContextType {

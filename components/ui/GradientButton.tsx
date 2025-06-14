@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient'
 import React from 'react'
-import { StyleSheet, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native'
+import { StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native'
 
 
 interface GradientButtonProps {
@@ -20,16 +20,26 @@ const GradientButton = (props: GradientButtonProps) => {
       disabled={props.disabled}
       activeOpacity={0.8}
     >
-      <LinearGradient
-        colors={['#FF4747', '#FFC812']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.gradient}
-      >
-        <Text style={[styles.text, props.textStyle]}>
-          {props.title}
-        </Text>
-      </LinearGradient>
+      {
+        props.style?.backgroundColor ?
+        <View style={[styles.gradient, { backgroundColor: props.style.backgroundColor }]}>
+          <Text style={[styles.text, props.textStyle]}>
+            {props.title}
+          </Text>
+          </View>
+          :
+          <LinearGradient
+            colors={['#FF4747', '#FFC812']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.gradient}
+          >
+            <Text style={[styles.text, props.textStyle]}>
+              {props.title}
+            </Text>
+          </LinearGradient>
+
+      }
     </TouchableOpacity>
   )
 }
