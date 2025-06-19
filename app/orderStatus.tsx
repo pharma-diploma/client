@@ -140,9 +140,6 @@ const Stage2 = (props: any) => (
     </Defs>
   </Svg>
 );
-
-
-
 /* SVGR has dropped some elements not supported by react-native-svg: filter */
 const Stage3 = (props: any) => (
   <Svg
@@ -240,15 +237,21 @@ export default function CartScreen() {
   useEffect(() => {
     // Подключение к сокету
     const socket = io(process.env.EXPO_PUBLIC_API_URL);
-
+    socket.emit("join", user?._id);
     // Слушаем событие обновления статуса заказа
     socket.on('orderStatusChanged', (data) => {
+      console.log("Order status changed:", data);
       if (data.orderId === orderId) {
         setOrderStatus(data.status);
         // Пример: меняем stage в зависимости от статуса
         if (data.status === 'pending') setStage(1);
-        if (data.status === 'delivery') setStage(2);
-        if (data.status === 'completed') setStage(3);
+        if (data.status === 'taking') setStage(2);
+        if (data.status === 'delivery') setStage(3);
+        if (data.status === 'finish') {
+          // Здесь можно добавить логику для завершения заказа, например, показать уведомление
+          console.log("Order finished");
+          router.replace("/");
+        };
       }
     });
 
@@ -257,7 +260,7 @@ export default function CartScreen() {
       socket.off('orderStatusChanged');
       socket.disconnect();
     };
-  }, [orderId]);
+  }, []);
 
   return (
      <View style={{backgroundColor: "white", flex: 1}}>

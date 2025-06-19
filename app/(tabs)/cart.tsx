@@ -15,6 +15,7 @@ export default function CartScreen() {
 
 
   const fetchCart = async () => {
+    console.log(user?._id);
     if (!user?._id) return;
     setLoading(true);
     setError('');
@@ -22,7 +23,7 @@ export default function CartScreen() {
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/cart/${user._id}`);
       if (!res.ok) throw new Error('Не вдалося завантажити корзину');
       const data = await res.json();
-      console.log(data);
+      console.log("cart", data);
       setCart(data.items || []);
     } catch (e) {
       setError('Не вдалося завантажити корзину');
@@ -33,7 +34,7 @@ export default function CartScreen() {
   useFocusEffect(
         React.useCallback(() => {
             fetchCart();
-        }, [user?._id])
+        }, [])
       );
   
   return (

@@ -1,5 +1,6 @@
+import { useAuth } from '@/context/AuthContext';
 import { router, Tabs } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import BasketIcon from '@/assets/svg/nav/BasketIcon';
 import BasketIconActive from '@/assets/svg/nav/BasketIconActive';
@@ -7,12 +8,19 @@ import HomeIcon from '@/assets/svg/nav/HomeIcon';
 import HomeIconActive from '@/assets/svg/nav/HomeIconActive';
 import ProfileIcon from '@/assets/svg/nav/ProfileIcon';
 import ProfileIconActive from '@/assets/svg/nav/ProfileIconActive';
-import { useAuth } from '@/context/AuthContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const {user} = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace('/(auth)/login');
+    }
+  }, [isAuthenticated, isLoading]);
+
+  if (isLoading) return null;
 
   if (user && !user.name) {
     return router.replace('/setupName');

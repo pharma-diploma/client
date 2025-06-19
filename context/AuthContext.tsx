@@ -18,6 +18,7 @@ interface AuthContextType {
   user: User | null;
   login: (userData: User) => Promise<void>;
   logout: () => Promise<void>;
+  isLoading: boolean;
   isAuthenticated: boolean;
 }
 
@@ -25,13 +26,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Восстанавливаем сохранённого пользователя при инициализации
   useEffect(() => {
-    const bootstrapAsync = async () => {
+    const loadUser = async () => {
       try {
-        // await AsyncStorage.removeItem("user"); // Очистка для тестов, удалить в продакшене
         const storedUser = await AsyncStorage.getItem("user");
         console.log(storedUser);
         if (storedUser) {
@@ -40,11 +40,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } catch (e) {
         console.error("Ошибка восстановления данных пользователя", e);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
-    bootstrapAsync();
+    loadUser();
   }, []);
 
   const login = async (userData: User) => {
@@ -65,16 +65,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("Ошибка удаления пользователя", e);
     }
   };
-
+  console.log(user);
   const isAuthenticated = !!user;
 
   // Пока идет загрузка (restore) можно вернуть SplashScreen или null
-  if (loading) {
+  if (isLoading) {
     return <View style={{flex:1, backgroundColor:'#fff'}} />;
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, isLoading, login, logout, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

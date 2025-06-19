@@ -9,8 +9,9 @@ import { useEffect } from 'react';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
 function AppNavigator() {
-  const { isAuthenticated } = useAuth();
-  console.log(isAuthenticated);
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) return null; // или SplashScreen
 
   if (isAuthenticated) {
     // Protected routes

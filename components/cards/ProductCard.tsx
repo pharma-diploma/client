@@ -2,7 +2,7 @@ import { useAuth } from '@/context/AuthContext';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import GradientButton from '../ui/GradientButton';
 
@@ -16,9 +16,11 @@ interface ProductCardProps {
 
 
 const ProductCard = ({_id, name, image, price, description}: ProductCardProps) => {
-const { user } = useAuth();
-const handleAddToCart = async () => {
-    if (!user?._id) return; // или user?._id, если у вас так
+  const { user } = useAuth();
+  const [toastVisible, setToastVisible] = useState(false);
+
+  const handleAddToCart = async () => {
+    if (!user?._id) return;
     try {
       const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/cart/${user._id}/add`, {
         method: 'POST',
@@ -28,17 +30,18 @@ const handleAddToCart = async () => {
         body: JSON.stringify({ pharmacyProductId: _id }),
       });
       if (!res.ok) throw new Error('Не вдалося додати до кошика');
-      // Можно показать уведомление об успехе
-      console.log(res.status);
-      const data = await res.json();
-      console.log(data)
+      await res.json();
+      setToastVisible(true);
+      setTimeout(() => setToastVisible(false), 2000);
     } catch (e) {
-      // Можно показать уведомление об ошибке
       console.error(e);
+      // Можно добавить аналогичное уведомление об ошибке
     }
   };
+
   return (
-    <TouchableOpacity style={{
+    <TouchableOpacity
+      style={{
         backgroundColor: "white", 
         padding: 16,
         paddingVertical: 11,
@@ -48,11 +51,12 @@ const handleAddToCart = async () => {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-    }}
-        onPress={() => router.push({
-            pathname: '/products/[id]',
-            params: { id: _id }
-        })}
+      }}
+      onPress={() => router.push({
+        pathname: '/products/[id]',
+        params: { id: _id }
+      })}
+      activeOpacity={0.95}
     >
       <View style={{flexDirection: "row", gap: 14,  maxWidth: '70%'}}>
         <Image 
@@ -76,7 +80,7 @@ const handleAddToCart = async () => {
                         <Text style={{
                             fontSize: 18,
                             fontWeight: '500',
-                            color: 'black', // цвет не важен, главное чтобы был
+                            color: 'black',
                         }}>
                         {price}₴
                         </Text>
@@ -89,7 +93,7 @@ const handleAddToCart = async () => {
                         <Text style={{
                             fontSize: 18,
                             fontWeight: '500',
-                            opacity: 0, // текст невидим, используется только маска
+                            opacity: 0,
                         }}>
                             {price}₴
                         </Text>
@@ -105,10 +109,33 @@ const handleAddToCart = async () => {
         style={{ height: 34, padding: 0, width: 112 }}
         textStyle={{ fontSize: 14, fontWeight: '500' }}
       />
+      {toastVisible && (
+        <View style={styles.toast}>
+          <Text style={styles.toastText}>Товар додано до кошика!</Text>
+        </View>
+      )}
     </TouchableOpacity>
   )
 }
 
 export default ProductCard
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  toast: {
+    position: 'absolute',
+    bottom: 10,
+    left: 20,
+    right: 20,
+    backgroundColor: '#222',
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    zIndex: 100,
+    opacity: 0.95,
+  },
+  toastText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '500',
+  },
+});
