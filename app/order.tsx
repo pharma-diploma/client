@@ -1,4 +1,4 @@
-import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import BackIcon from '@/assets/svg/BackIcon';
 import CartItemCard from '@/components/cards/CartItemCard';
@@ -59,6 +59,32 @@ export default function CartScreen() {
             fetchCart();
         }, [user?._id])
       );
+  
+  const handleCreateOrder = async () => {
+    if (!user?._id) {
+      Alert.alert('Помилка', 'Користувач не знайдений');
+      return;
+    }
+    try {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/orders/${user._id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!res.ok) throw new Error('Не вдалося створити замовлення');
+      const data = await res.json();
+      Alert.alert('Успіх', 'Замовлення створено!');
+      router.push({
+        pathname: '/orderStatus',
+        params: { 
+          data: JSON.stringify({orderId: data._id})
+        }
+      })
+    } catch (e) {
+      Alert.alert('Помилка', 'Не вдалося створити замовлення');
+    }
+  };
   
   return (
      <View style={{backgroundColor: "white", flex: 1}}>
@@ -170,7 +196,7 @@ export default function CartScreen() {
 
             </View>
       </ScrollView>
-       <GradientButton title="Оформити замовлення 499₴" style={{width: "95%", position: "absolute", alignSelf: "center", bottom: 50}} onPress={() => router.push("/orderStatus")}/>
+       <GradientButton title="Оформити замовлення 499₴" style={{width: "95%", position: "absolute", alignSelf: "center", bottom: 50}} onPress={handleCreateOrder}/>
     </View>
   );
 }

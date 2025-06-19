@@ -1,20 +1,20 @@
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import io from 'socket.io-client'; // добавьте импорт
 
 import BackIcon from '@/assets/svg/BackIcon';
-import Header from '@/components/Header';
-import { useAuth } from '@/context/AuthContext';
-import { router } from 'expo-router';
-import React, { useEffect } from 'react';
-
 import CurierIcon from '@/assets/svg/CurierIcon';
+import Header from '@/components/Header';
 import GradientButton from '@/components/ui/GradientButton';
+import { useAuth } from '@/context/AuthContext';
+import { router, useLocalSearchParams } from 'expo-router';
 import Svg, {
-    Defs,
-    G,
-    LinearGradient,
-    Path,
-    Rect,
-    Stop,
+  Defs,
+  G,
+  LinearGradient,
+  Path,
+  Rect,
+  Stop,
 } from "react-native-svg";
 /* SVGR has dropped some elements not supported by react-native-svg: filter */
 const Stage1 = (props: any) => (
@@ -231,43 +231,34 @@ const Stage3 = (props: any) => (
 
 export default function CartScreen() {
   const { user } = useAuth();
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState('');
-  const [cart, setCart] = React.useState<any[]>([]);
-
   const [stage, setStage] = React.useState(1);
-
-  const fetchCart = async () => {
-    if (!user?._id) return;
-    setLoading(true);
-    setError('');
-    try {
-      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/cart/${user._id}`);
-      if (!res.ok) throw new Error('Не вдалося завантажити корзину');
-      const data = await res.json();
-      console.log(data);
-      setCart(data.items || []);
-    } catch (e) {
-      setError('Не вдалося завантажити корзину');
-    } finally {
-      setLoading(false);
-    }
-  };
-  
+  const [orderStatus, setOrderStatus] = React.useState('');
+  const { data } = useLocalSearchParams();
+  const parsedData = JSON.parse(data as string);
+  console.log(parsedData);
+  const orderId = parsedData.orderId;
   useEffect(() => {
-    const timer1 = setTimeout(() => {
-      setStage(2);
-      console.log("first stage done");
-      const timer2 = setTimeout(() => {
-        setStage(3);
-        console.log("second stage done");
-      }, 2000); // Stage2 держится 10 секунд
-      return () => clearTimeout(timer2);
-    }, 2000); // Stage1 держится 10 секунд
+    // Подключение к сокету
+    const socket = io(process.env.EXPO_PUBLIC_API_URL);
 
-    return () => clearTimeout(timer1);
-  }, []);
-  
+    // Слушаем событие обновления статуса заказа
+    socket.on('orderStatusChanged', (data) => {
+      if (data.orderId === orderId) {
+        setOrderStatus(data.status);
+        // Пример: меняем stage в зависимости от статуса
+        if (data.status === 'pending') setStage(1);
+        if (data.status === 'delivery') setStage(2);
+        if (data.status === 'completed') setStage(3);
+      }
+    });
+
+    // Очистка слушателя при размонтировании
+    return () => {
+      socket.off('orderStatusChanged');
+      socket.disconnect();
+    };
+  }, [orderId]);
+
   return (
      <View style={{backgroundColor: "white", flex: 1}}>
         <Header
